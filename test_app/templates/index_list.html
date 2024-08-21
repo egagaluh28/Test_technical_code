@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <title>validasi form angka</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Validasi Form</h1>
+    <form id="numberForm">
+      <label for="number">Masukan Angka:</label>
+      <input type="number" id="number" name="number" required />
+      <br /><br />
+      <button type="button" id="generateTriangle">Generate Segitiga</button>
+      <button type="button" id="generateOdd">Generate Bilangan Ganjil</button>
+      <button type="button" id="generatePrima">Generate Bilangan Prima</button>
+    </form>
+    <div id="result"></div>
+    <script>
+      $(document).ready(function () {
+        $("#generateTriangle").click(function () {
+          sendRequest("generate_triangle");
+        });
+        $("#generateOdd").click(function () {
+          sendRequest("generate_odd");
+        });
+        $("#generatePrima").click(function () {
+          sendRequest("generate_prime");
+        });
+
+        function sendRequest(action) {
+          const number = $("#number").val();
+          if (!number || isNaN(number)) {
+            $("#result").html("Masukan angka yang benar");
+            return;
+          }
+          $.ajax({
+            url: '{% url "proces" %}', // Pastikan URL ini benar
+            method: "POST",
+            data: {
+              number: number,
+              action: action,
+              csrfmiddlewaretoken: "{{ csrf_token }}", // Tidak perlu tanda %
+            },
+            success: function (response) {
+              $("#result").html(response.result.replace(/\n/g, "<br>"));
+            },
+            error: function () {
+              $("#result").html("Error");
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
